@@ -135,11 +135,9 @@ const imgTarget = document.querySelectorAll('img[data-src]');
 const imgFun = function (entries, observer) {
   const [entry] = entries;
   if (!entry.isIntersecting) return;
-  // console.log(entry);
   entry.target.src = entry.target.dataset.src;
 
   entry.target.addEventListener('load', function () {
-    // console.log('we are here');
     entry.target.classList.remove('lazy-img');
     observer.unobserve(entry.target);
   });
@@ -152,6 +150,65 @@ const imgObserver = new IntersectionObserver(imgFun, {
 imgTarget.forEach(function (img) {
   imgObserver.observe(img);
 });
+
+const slides = document.querySelectorAll('.slide');
+// console.log(slides);
+const rightBtn = document.querySelector('.slider__btn--right');
+const leftBtn = document.querySelector('.slider__btn--left');
+
+let currSlide = 0;
+const maxSlide = slides.length;
+
+const activateDots = function (num) {
+  document.querySelectorAll('.dots__dot').forEach(function (el) {
+    el.classList.remove('dots__dot--active');
+  });
+  document
+    .querySelector(`.dots__dot[data-num="${num}"]`)
+    .classList.add('dots__dot--active');
+};
+
+slides.forEach(function (sl, i) {
+  sl.style.transform = `translateX(${100 * i}%)`;
+});
+
+rightBtn.addEventListener('click', function () {
+  if (currSlide === maxSlide - 1) {
+    currSlide = 0;
+  } else {
+    currSlide++;
+  }
+  slides.forEach(function (sl, i) {
+    sl.style.transform = `translateX(${100 * (i - currSlide)}%)`;
+  });
+  activateDots(currSlide);
+});
+
+leftBtn.addEventListener('click', function () {
+  if (currSlide === 0) {
+    currSlide = maxSlide - 1;
+  } else {
+    currSlide--;
+  }
+  slides.forEach(function (sl, i) {
+    sl.style.transform = `translateX(${100 * (i - currSlide)}%)`;
+  });
+  activateDots(currSlide);
+});
+
+const dotContainer = document.querySelector('.dots');
+dotContainer.addEventListener('click', function (e) {
+  if (e.target.classList.contains('dots__dot')) {
+    const dotEl = e.target;
+    const curr = dotEl.dataset.num;
+    slides.forEach(function (sl, i) {
+      sl.style.transform = `translateX(${100 * (i - curr)}%)`;
+    });
+    activateDots(curr);
+  }
+});
+
+// console.log(slides);
 // const h1 = document.querySelector('h1');
 // console.log(h1.parentElement);
 
